@@ -37,3 +37,4 @@ next-env.d.ts
 
 #private
 app/components/Hero2.tsx
+app/components/Features.tsx
