@@ -24,8 +24,8 @@ const Example: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4 items-center">
-      <section className="max-w-xl mx-auto mt-4">
-        <h1 className="font-extrabold text-center text-4xl lg:text-6xl tracking-tight mb-6">
+      <section className="max-w-xl mx-auto mt-4 text-center ">
+        <h1 className="font-extrabold text-4xl lg:text-6xl tracking-tight mb-6">
           Astronomy at Your{" "}
           <span className="relative mt-5 inline-block px-3 py-0.5 font-bold text-white bg-accent rounded-md transform rotate-[2deg]">
             <div className="absolute inset-0 "></div>
@@ -36,7 +36,9 @@ const Example: React.FC = () => {
         </h1>
         <p className="text-lg opacity-80 leading-relaxed">
           Gain access to NASA&apos;s Astronomy Picture of the Day (APOD) by
-          date.
+          date. Explore the wonders of the cosmos through stunning images and
+          insightful explanations provided by professional astronomers for each
+          selected day.
         </p>
       </section>
       <DatePicker
@@ -60,7 +62,7 @@ const Example: React.FC = () => {
         }
         className="input input-bordered input-accent w-full max-w-xs text-center text-xl"
       />
-      <button className="btn  btn-accent  text-xl">
+      <button className="btn  btn-accent btn-disabled text-xl">
         {" "}
         <span>{imageIcon}</span> Take a Peek
       </button>
