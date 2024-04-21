@@ -5,12 +5,12 @@ const Window = () => {
   return (
     <div className="relative h-[500px] w-[350px] md:w-[700px]">
       <div className="mockup-window bg-base-900 border ">
-        <div className="bg-base-200 relative py-56">
+        <div className="bg-base-200 text-base-100 text-center relative py-56">
           <Image
-            src="https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp"
+            src=""
             alt="Astro View Hero Image"
             fill={true}
-            className="object-cover"
+            className="object-cover skeleton"
             priority
           />
         </div>
