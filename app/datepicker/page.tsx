@@ -35,8 +35,7 @@ const Example: React.FC = () => {
           </span>
         </h1>
         <p className="text-lg opacity-80 leading-relaxed">
-          Gain access to NASA&apos;s Astronomy Picture of the Day (APOD) by
-          date. Explore the wonders of the cosmos through stunning images and
+          Explore the wonders of the cosmos through stunning images and
           insightful explanations provided by professional astronomers for each
           selected day.
         </p>
