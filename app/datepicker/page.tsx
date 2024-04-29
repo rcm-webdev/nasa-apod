@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
+import DatePicker, { CalendarContainer } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Example: React.FC = () => {
@@ -34,7 +34,7 @@ const Example: React.FC = () => {
             </span>
           </span>
         </h1>
-        <p className="text-lg opacity-80 leading-relaxed">
+        <p className="text-lg opacity-80 leading-relaxed m-4">
           Explore the wonders of the cosmos through stunning images and
           insightful explanations provided by professional astronomers for each
           selected day.
@@ -45,6 +45,7 @@ const Example: React.FC = () => {
         selected={startDate}
         onChange={(date: Date | null) => setStartDate(date)}
         placeholderText="Select Date"
+        title="Pick a Date"
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -60,8 +61,12 @@ const Example: React.FC = () => {
           </svg>
         }
         className="input input-bordered input-accent w-full max-w-xs text-center text-xl"
-      />
-      <button className="btn  btn-accent btn-disabled text-xl">
+      >
+        <div className="text-accent font-bold text-base">Hello World</div>
+        <CalendarContainer className="bg-primary text-primary" />
+      </DatePicker>
+
+      <button className="btn  btn-accent  text-xl">
         {" "}
         <span>{imageIcon}</span> Take a Peek
       </button>
