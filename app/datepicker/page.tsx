@@ -1,12 +1,55 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker, { CalendarContainer } from "react-datepicker";
+import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
+
+interface APODData {
+  date: string;
+  explanation: string;
+  hdurl: string;
+  media_type: string;
+  service_version: string;
+  title: string;
+  url: string;
+}
 
 const Example: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [apodData, setApodData] = useState<APODData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch APOD data
+  const apiKey = process.env.NEXT_PUBLIC_NASA_API_KEY;
+
+  const fetchAPODData = async (date: Date) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const formattedDate = date.toISOString().split("T")[0];
+      const response = await axios.get<APODData>(
+        "https://api.nasa.gov/planetary/apod",
+        {
+          params: {
+            api_key: apiKey,
+            date: formattedDate,
+          },
+        }
+      );
+      setApodData(response.data);
+      // Add a delay before setting loading to false
+      setTimeout(() => setLoading(false), 20000);
+    } catch (err) {
+      setError("Failed to fetch APOD data. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const imageIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -62,11 +105,16 @@ const Example: React.FC = () => {
         }
         className="input input-bordered input-accent w-full max-w-xs text-center text-xl"
       >
-        <div className="text-accent font-bold text-base">Hello World</div>
+        <div className="text-accent font-bold text-base text-center">
+          Stardate Selector{" "}
+        </div>
         <CalendarContainer className="bg-primary text-primary" />
       </DatePicker>
 
-      <button className="btn  btn-accent  text-xl">
+      <button
+        className="btn  btn-accent  text-xl"
+        onClick={() => startDate && fetchAPODData(startDate)}
+      >
         {" "}
         <span>{imageIcon}</span> Take a Peek
       </button>
@@ -74,27 +122,43 @@ const Example: React.FC = () => {
         {" "}
         <span className="opacity-50 text-accent">||</span>
       </div>
-      <div className="flex flex-wrap md:flex-nowrap gap-6 mt-8">
-        <div className="w-full md:mx-auto pl-4 m-4">
-          <Image
-            src=""
-            alt="stellar snapshot"
-            width={536}
-            height={354}
-            className="skeleton w-full text-center text-base-100 rounded-3xl"
-          />
+
+      {loading && (
+        <div className="flex items-center justify-center">
+          <div
+            className="spinner-border animate-spin inline-block w-8 h-8 border-b-2 border-blue-500 rounded-full"
+            role="status"
+          >
+            <span className="hidden">Loading...</span>
+          </div>
+          <p className="ml-4">Loading...</p>
         </div>
-        <div className="w-full md:w-1/2 m-4">
-          <div className="p-4">
-            <h2 className="text-2xl font-bold">Field Notes</h2>
-            <p className="mt-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit
-              amet nulla auctor, vestibulum magna sed, convallis ex. Cras
-              ultricies, nisi vitae finibus dictum, arcu metus.
-            </p>
+      )}
+
+      {error && <p className="text-red-500">{error}</p>}
+
+      {apodData && (
+        <div className="flex flex-wrap md:flex-nowrap gap-6 mt-8">
+          <div className="w-full md:mx-auto pl-4 m-4">
+            <Image
+              src={apodData?.url}
+              alt={apodData?.title}
+              width={536}
+              height={354}
+              className="skeleton w-full text-center text-base-100 rounded-3xl object-cover"
+            />
+          </div>
+          <div className="w-full md:w-1/2 m-4">
+            <div className="p-4">
+              <h2 className="text-2xl font-bold">Field Notes</h2>
+              <h3 className="text-xl font-bold text-accent">
+                {apodData?.title}
+              </h3>
+              <p className="mt-4 tracking-6">{apodData?.explanation}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
