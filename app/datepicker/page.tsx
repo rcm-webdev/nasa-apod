@@ -10,7 +10,7 @@ interface APODData {
   date: string;
   explanation: string;
   hdurl: string;
-  media_type: string;
+  media_type: "image" | "video";
   service_version: string;
   title: string;
   url: string;
@@ -21,6 +21,25 @@ const Example: React.FC = () => {
   const [apodData, setApodData] = useState<APODData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDateValid, setIsDateValid] = useState<boolean>(true);
+  const size = {
+    width: 800,
+    height: 800,
+  };
+  const style =
+    "rounded-2xl aspect-square w-full sm:w-[30rem] md:w-[34rem] lg:w-[48rem]";
+
+  const isValidDate = (date: Date | null): boolean => {
+    if (!date) return false;
+    const currentDate = new Date();
+    const earliestDate = new Date("1995-06-16"); // APOD started on this date
+    return date >= earliestDate && date <= currentDate;
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setStartDate(date);
+    setIsDateValid(isValidDate(date));
+  };
 
   // Fetch APOD data
   const apiKey = process.env.NEXT_PUBLIC_NASA_API_KEY;
@@ -89,6 +108,8 @@ const Example: React.FC = () => {
         onChange={(date: Date | null) => setStartDate(date)}
         placeholderText="Select Date"
         title="Pick a Date"
+        maxDate={new Date()} // Prevent future dates
+        minDate={new Date("1995-06-16")} // Earliest APOD date
         icon={
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -112,8 +133,9 @@ const Example: React.FC = () => {
       </DatePicker>
 
       <button
-        className="btn  btn-accent  text-xl"
+        className={`btn text-xl ${isDateValid ? "btn-accent" : "btn-disabled"}`}
         onClick={() => startDate && fetchAPODData(startDate)}
+        disabled={!isDateValid}
       >
         {" "}
         <span>{imageIcon}</span> Take a Peek
@@ -139,14 +161,29 @@ const Example: React.FC = () => {
 
       {apodData && (
         <div className="flex flex-wrap md:flex-nowrap gap-6 mt-8">
-          <div className="w-full md:mx-auto pl-4 m-4">
-            <Image
-              src={apodData?.url}
-              alt={apodData?.title}
-              width={536}
-              height={354}
-              className="skeleton w-full text-center text-base-100 rounded-3xl object-cover"
-            />
+          <div className="text-center md:mx-auto pl-4 m-4">
+            {apodData.media_type === "image" ? (
+              <Image
+                src={apodData.url}
+                alt={apodData.title}
+                width={size.width}
+                height={size.height}
+                className={`${style} object-cover object-center skeleton text-base-100 text-center`}
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 30rem, (max-width: 1024px) 34rem, 38rem"
+              />
+            ) : apodData.media_type === "video" ? (
+              <div className="aspect-w-16 aspect-h-9">
+                <iframe
+                  src={apodData.url}
+                  title={apodData.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full rounded-3xl"
+                ></iframe>
+              </div>
+            ) : (
+              <p>Unsupported media type</p>
+            )}
           </div>
           <div className="w-full md:w-1/2 m-4">
             <div className="p-4">
@@ -154,7 +191,12 @@ const Example: React.FC = () => {
               <h3 className="text-xl font-bold text-accent">
                 {apodData?.title}
               </h3>
-              <p className="mt-4 tracking-6">{apodData?.explanation}</p>
+              <p className="mt-4 tracking-6 text-xl">{apodData?.explanation}</p>
+              <p className="mt-4 tracking-6 text-xl text-primary opacity-40">
+                {apodData?.date} <br />
+                media_type:{" "}
+                {apodData?.media_type === "image" ? "Image" : "Video"}
+              </p>
             </div>
           </div>
         </div>
