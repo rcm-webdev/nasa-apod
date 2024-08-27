@@ -62,7 +62,7 @@ const Example: React.FC = () => {
       // Add a delay before setting loading to false
       setTimeout(() => setLoading(false), 20000);
     } catch (err) {
-      setError("Failed to fetch APOD data. Please try again.");
+      setError("Failed to fetch APOD data. Please try again at a later time.");
       console.error(err);
     } finally {
       setLoading(false);
